@@ -108,14 +108,20 @@ function orderPlaces(places, service) {
           var from = origins[i];
           var to = destinations[j];
 
-          if (distance < minimum.distance && selected.indexOf(j) < 0) {
+          if (distance < minimum.distance && selected.indexOf(j) < 0 && i != j) {
             minimum = { 'pos': j, 'distance': distance };
           }
         }
+        selected.push(minimum.pos);
       }
-      selected.push(j);
     }
-    console.log(JSON.stringify(selected));
+
+    orderedList.push(origins[0]);
+    for (var i = 0; i < selected.length; i++) {
+      var pos = selected[i];
+      orderedList.push(places[pos]);
+    }
+    console.log(JSON.stringify(orderedList));
   }
 
   var names = [];
