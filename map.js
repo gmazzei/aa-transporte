@@ -88,7 +88,9 @@ function displayOneRoute(map, directionsService, origin, destination) {
 }
 
 function orderPlaces(places, service) {
-  
+
+  var orderedList = [];
+
   var callback = function(response, status) {
     if (status == google.maps.DistanceMatrixStatus.OK) {
       var origins = response.originAddresses;
