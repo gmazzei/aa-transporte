@@ -11,13 +11,17 @@
 
     <div id="floating-panel">
       <input id="address" type="textbox" value="Sydney, NSW">
-      <input id="submit" type="button" value="Geocode">
+      <input id="add" type="button" value="Add">
+      <ul id="list">
+      </ul>
+      <div>
+        <input id="order" type="button" value="Order Locations">
+      </div>
     </div>
-
-
+    
     <div id="map"></div>
     <script type="text/javascript" src="map.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=APIKEY&signed_in=true&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=KEY&signed_in=true&callback=initMap" async defer></script>
 
   </body>
 </html>
