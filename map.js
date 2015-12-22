@@ -95,23 +95,33 @@ function orderPlaces(places, service) {
     if (status == google.maps.DistanceMatrixStatus.OK) {
       var origins = response.originAddresses;
       var destinations = response.destinationAddresses;
+      var selected = [];
 
       for (var i = 0; i < origins.length; i++) {
         var results = response.rows[i].elements;
+        var minimum = {pos: 0, distance: 100000000};
+
         for (var j = 0; j < results.length; j++) {
           var element = results[j];
           var distance = element.distance.text;
           var duration = element.duration.text;
           var from = origins[i];
           var to = destinations[j];
+
+          if (distance < minimum.distance && selected.indexOf(j) < 0) {
+            minimum = { 'pos': j, 'distance': distance };
+          }
         }
       }
+      selected.push(j);
     }
+    console.log(JSON.stringify(selected));
   }
 
-  var names = places.filter(function(place) {
-    return place.name;
-  });
+  var names = [];
+  for (var i = 0; i < places.length; i++) {
+    names.push(places[i].name);
+  }
 
   service.getDistanceMatrix({
     origins: names,
@@ -120,3 +130,7 @@ function orderPlaces(places, service) {
   }, callback);
 
 }
+
+Array.min = function( array ){
+    return Math.min.apply( Math, array );
+};
