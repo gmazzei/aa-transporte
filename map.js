@@ -16,8 +16,7 @@ function initMap() {
   });
 
   document.getElementById('order').addEventListener('click', function() {
-    orderPlaces(places, service);
-    displayRoutes(map, directionsService, places);
+    displayRoutes(map, directionsService, service, places);
   });
 }
 
@@ -58,11 +57,30 @@ function addElement(address) {
 
 
 
-function displayRoutes(map, directionsService, places) {
-  
-  for (var i = 0; i < places.length - 1; i++) {
-    displayOneRoute(map, directionsService, places[i].name, places[i+1].name);
+function displayRoutes(map, directionsService, service, places) {
+  var orderedList = [];
+
+  var names = getNames(places);
+  var properties = {
+    origins: names,
+    destinations: names,
+    travelMode: google.maps.TravelMode.DRIVING
+  };
+
+
+  var callback = function(response, status) {
+    if (status == google.maps.DistanceMatrixStatus.OK) {
+      
+      var names = orderPlaces(response);
+      alert(names);
+      for (var i = 0; i < names.length - 1; i++) {
+        displayOneRoute(map, directionsService, names[i], names[i+1]);
+      }
+    }
   }
+
+  service.getDistanceMatrix(properties, callback);
+  
 }
 
 
@@ -87,56 +105,82 @@ function displayOneRoute(map, directionsService, origin, destination) {
   directionsService.route(properties, traceRoute);
 }
 
-function orderPlaces(places, service) {
 
+/**
+Returns an ordered list of places by distance (between each other)
+**/
+function orderPlaces(response) {
   var orderedList = [];
+  var names = [];
+  var origins = response.originAddresses;
+  var destinations = response.destinationAddresses;
+  var mat = getDistances(response);
+      
+  var next = 0;
+  names.push(origins[next]);
+  orderedList.push(next);
 
-  var callback = function(response, status) {
-    if (status == google.maps.DistanceMatrixStatus.OK) {
-      var origins = response.originAddresses;
-      var destinations = response.destinationAddresses;
-      var selected = [];
-
-      for (var i = 0; i < origins.length; i++) {
-        var results = response.rows[i].elements;
-        var minimum = {pos: 0, distance: 100000000};
-
-        for (var j = 0; j < results.length; j++) {
-          var element = results[j];
-          var distance = element.distance.text;
-          var duration = element.duration.text;
-          var from = origins[i];
-          var to = destinations[j];
-
-          if (distance < minimum.distance && selected.indexOf(j) < 0 && i != j) {
-            minimum = { 'pos': j, 'distance': distance };
-          }
-        }
-        selected.push(minimum.pos);
-      }
-    }
-
-    orderedList.push(origins[0]);
-    for (var i = 0; i < selected.length; i++) {
-      var pos = selected[i];
-      orderedList.push(places[pos]);
-    }
-    console.log(JSON.stringify(orderedList));
+  for (var i = 0; i < mat.length-1; i++) {
+    var next = findNext(next, mat, orderedList);
+    orderedList.push(next);
+    names.push(origins[next]);
   }
 
+  return names;
+}
+
+
+/**
+Gets a list with the names of the places
+**/
+function getNames(places) {
   var names = [];
   for (var i = 0; i < places.length; i++) {
     names.push(places[i].name);
   }
-
-  service.getDistanceMatrix({
-    origins: names,
-    destinations: names,
-    travelMode: google.maps.TravelMode.DRIVING
-  }, callback);
-
+  return names;
 }
 
-Array.min = function( array ){
-    return Math.min.apply( Math, array );
-};
+
+/**
+Builds a matrix of distances
+**/
+
+function getDistances(response) {
+  var mat = [];
+
+  var origins = response.originAddresses;
+  var destinations = response.destinationAddresses;
+
+  for (var i = 0; i < origins.length; i++) {
+      var row = [];
+      var results = response.rows[i].elements;
+      for (var j = 0; j < results.length; j++) {
+        var element = results[j];
+        var distance = element.distance.value;
+        row.push(distance);
+      }
+      mat.push(row);
+  }
+
+  return mat;
+}
+
+
+/**
+Finds the index of the closest place
+**/
+function findNext(pos, mat, orderedList) {
+  var result;
+  var distances = mat[pos];
+
+  var min = 100000000;
+  for (var i = 0; i < distances.length; i++) {
+    if (distances[i] < min && (i != pos) && (orderedList.indexOf(i) < 0)) {
+      min = distances[i];
+      result = i;
+    }
+  }
+
+  return result;
+}
