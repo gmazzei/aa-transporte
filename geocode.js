@@ -1,27 +1,39 @@
-const GEOCODE_ZOOM = 16;
+var geocoderService = {
 
-function geocodeAddress(geocoder, resultsMap, places) {
-  var address = $('#address').val();
+  GEOCODE_ZOOM: 16,
+  geocoder: null,
 
-  geocoder.geocode({'address': address}, function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-      
-      var formattedAddress = results[0].formatted_address;
-      var location = results[0].geometry.location;
+  initGeocoder: function() {
+    geocoderService.geocoder = new google.maps.Geocoder();
+  },
 
-      resultsMap.setCenter(location);
-      resultsMap.setZoom(GEOCODE_ZOOM);
+  geocodeAddress: function(resultsMap, places) {
+    
+    var address = UI.getAddress();
 
-      var marker = new google.maps.Marker({
-        map: resultsMap,
-        position: location
-      });
+    geocoderService.geocoder.geocode({'address': address}, function(results, status) {
+      if (status === google.maps.GeocoderStatus.OK) {
+        
+        var formattedAddress = results[0].formatted_address;
+        var location = results[0].geometry.location;
 
-      places.push(formattedAddress);
-      refreshList(places);
+        resultsMap.setCenter(location);
+        resultsMap.setZoom(geocoderService.GEOCODE_ZOOM);
 
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-}
+        var marker = new google.maps.Marker({
+          map: resultsMap,
+          position: location
+        });
+
+        UI.addPlace(formattedAddress);
+        UI.refreshList();
+
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+    
+  }
+
+
+};

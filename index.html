@@ -6,13 +6,20 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="styles.css"></link>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script type="text/javascript" src="ui.js"></script>
+    <script src="init.js"></script>
+    <script src="ui.js"></script>
+    <script src="map.js"></script>
+    <script src="geocode.js"></script>
+    <script src="routeTracer.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=KEY&signed_in=true&callback=initMap" async defer></script>
   </head>
+
   <body>
 
     <div id="floating-panel">
+      <label>Ingrese los destinos:</label>
       <input id="address" type="textbox" value="Sydney, NSW">
-      <input id="add" type="button" value="Add">
+      <input id="add" type="button" value="Agregar">
       <ul id="list">
       </ul>
       <div>
@@ -21,10 +28,7 @@
     </div>
     
     <div id="map"></div>
-    <script type="text/javascript" src="map.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=KEY&signed_in=true&callback=initMap" async defer></script>
-    <script type="text/javascript" src="geocode.js"></script>
-    <script type="text/javascript" src="routeTracer.js"></script>
 
   </body>
+
 </html>

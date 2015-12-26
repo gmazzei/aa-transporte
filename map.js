@@ -1,25 +1,17 @@
-const INITIAL_ZOOM = 2;
-const INITIAL_LOCATION = {lat: 0, lng: 0};
+var mapService = {
 
+  map: null,
+  INITIAL_ZOOM: 2,
+  INITIAL_LOCATION: {lat: 0, lng: 0},
 
-function initMap() {
+  initMap: function() {
 
-  var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: INITIAL_ZOOM,
-    center: INITIAL_LOCATION
-  });
+    var mapElement = UI.getMap();
 
-  var places = [];
-  var geocoder = new google.maps.Geocoder();
-  var directionsService = new google.maps.DirectionsService;
-  var distanceMatrixService = new google.maps.DistanceMatrixService();
+    mapService.map = new google.maps.Map(mapElement, {
+      zoom: mapService.INITIAL_ZOOM,
+      center: mapService.INITIAL_LOCATION
+    });
+  }
 
-
-  $("#add").click(function() {
-      geocodeAddress(geocoder, map, places);
-  });
-
-  $("#order").click(function() {
-    displayRoutes(map, directionsService, distanceMatrixService, places);
-  });
 }

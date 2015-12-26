@@ -20,3 +20,11 @@ html, body {
   line-height: 30px;
   padding-left: 10px;
 }
+
+#floating-panel .delete-link {
+  float: right;
+}
+
+#floating-panel .list-text {
+  font-size: 0.9em;
+}
